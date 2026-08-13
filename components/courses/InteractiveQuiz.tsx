@@ -16,17 +16,28 @@ export default function InteractiveQuiz({
   const [answered, setAnswered] = useState(false);
   const [finished, setFinished] = useState(false);
 
+  /*
+   * DIAGNÓSTICO
+   * Esto nos permite comprobar exactamente qué está recibiendo
+   * el componente.
+   */
   if (questions.length === 0) {
     return (
-      <div className="rounded-2xl border border-slate-800 bg-slate-900 p-8 text-center">
-        <div className="text-4xl">📝</div>
+      <div className="rounded-2xl border-2 border-red-500 bg-red-950 p-8 text-center">
+        <div className="text-4xl">❌</div>
 
-        <h3 className="mt-4 text-lg font-black text-white">
-          Quiz próximamente
+        <h3 className="mt-4 text-xl font-black text-red-400">
+          InteractiveQuiz está recibiendo 0 preguntas
         </h3>
 
-        <p className="mt-2 text-sm text-slate-400">
-          Esta lección todavía no tiene preguntas disponibles.
+        <p className="mt-3 text-sm text-slate-300">
+          El componente sí se está renderizando, pero
+          <strong className="text-white"> lesson.quiz </strong>
+          está llegando vacío.
+        </p>
+
+        <p className="mt-3 font-mono text-xs text-red-300">
+          questions.length = {questions.length}
         </p>
       </div>
     );
@@ -35,12 +46,12 @@ export default function InteractiveQuiz({
   const question = questions[currentQuestion];
 
   const progress =
-    ((currentQuestion + (answered ? 1 : 0)) / questions.length) * 100;
+    ((currentQuestion + (answered ? 1 : 0)) /
+      questions.length) *
+    100;
 
   function handleAnswer(optionId: string) {
-    if (answered) {
-      return;
-    }
+    if (answered) return;
 
     setSelectedAnswer(optionId);
     setAnswered(true);
@@ -51,9 +62,7 @@ export default function InteractiveQuiz({
   }
 
   function handleNext() {
-    if (!answered) {
-      return;
-    }
+    if (!answered) return;
 
     if (currentQuestion === questions.length - 1) {
       setFinished(true);
@@ -74,7 +83,9 @@ export default function InteractiveQuiz({
   }
 
   if (finished) {
-    const percentage = Math.round((score / questions.length) * 100);
+    const percentage = Math.round(
+      (score / questions.length) * 100
+    );
 
     let resultTitle = "Puedes mejorar 💪";
     let resultMessage =
@@ -96,7 +107,9 @@ export default function InteractiveQuiz({
 
     return (
       <div className="overflow-hidden rounded-2xl border border-slate-800 bg-slate-900">
+
         <div className="border-b border-slate-800 bg-slate-950 p-6">
+
           <div className="text-xs font-bold uppercase tracking-wider text-cyan-400">
             Resultado del quiz
           </div>
@@ -104,11 +117,15 @@ export default function InteractiveQuiz({
           <h3 className="mt-3 text-2xl font-black text-white">
             {resultTitle}
           </h3>
+
         </div>
 
         <div className="p-6">
+
           <div className="mx-auto flex h-32 w-32 items-center justify-center rounded-full border-8 border-cyan-500/20">
+
             <div className="text-center">
+
               <div className="text-3xl font-black text-cyan-400">
                 {percentage}%
               </div>
@@ -116,10 +133,13 @@ export default function InteractiveQuiz({
               <div className="text-xs text-slate-500">
                 puntuación
               </div>
+
             </div>
+
           </div>
 
           <div className="mt-8 text-center">
+
             <p className="text-lg font-bold text-white">
               {score} de {questions.length} respuestas correctas
             </p>
@@ -127,15 +147,17 @@ export default function InteractiveQuiz({
             <p className="mt-2 text-sm leading-6 text-slate-400">
               {resultMessage}
             </p>
+
           </div>
 
           <button
             type="button"
             onClick={restartQuiz}
-            className="mt-8 w-full rounded-xl bg-cyan-500 px-5 py-3 text-sm font-black text-slate-950 transition hover:bg-cyan-400"
+            className="mt-8 w-full rounded-xl bg-cyan-500 px-5 py-3 text-sm font-black text-slate-950"
           >
             🔄 Volver a intentar
           </button>
+
         </div>
       </div>
     );
@@ -143,10 +165,13 @@ export default function InteractiveQuiz({
 
   return (
     <div className="overflow-hidden rounded-2xl border border-slate-800 bg-slate-900">
-      {/* HEADER */}
+
       <div className="border-b border-slate-800 bg-slate-950 p-5">
+
         <div className="flex items-center justify-between gap-4">
+
           <div>
+
             <div className="text-xs font-bold uppercase tracking-wider text-cyan-400">
               Quiz interactivo
             </div>
@@ -154,27 +179,32 @@ export default function InteractiveQuiz({
             <h3 className="mt-1 text-lg font-black text-white">
               Comprueba lo que aprendiste
             </h3>
+
           </div>
 
           <div className="shrink-0 rounded-full border border-slate-700 bg-slate-900 px-3 py-1 text-xs font-bold text-slate-400">
             {currentQuestion + 1} / {questions.length}
           </div>
+
         </div>
 
-        {/* BARRA DE PROGRESO */}
         <div className="mt-5 h-2 overflow-hidden rounded-full bg-slate-800">
+
           <div
             className="h-full rounded-full bg-cyan-500 transition-all duration-500"
             style={{
               width: `${Math.max(progress, 5)}%`,
             }}
           />
+
         </div>
+
       </div>
 
-      {/* PREGUNTA */}
       <div className="p-5 sm:p-6">
+
         <div className="mb-6">
+
           <span className="text-xs font-bold uppercase tracking-wider text-slate-500">
             Pregunta {currentQuestion + 1}
           </span>
@@ -182,13 +212,18 @@ export default function InteractiveQuiz({
           <h4 className="mt-3 text-xl font-black leading-8 text-white">
             {question.question}
           </h4>
+
         </div>
 
-        {/* OPCIONES */}
         <div className="space-y-3">
+
           {question.options.map((option) => {
-            const isSelected = selectedAnswer === option.id;
-            const isCorrect = option.id === question.correctAnswer;
+
+            const isSelected =
+              selectedAnswer === option.id;
+
+            const isCorrect =
+              option.id === question.correctAnswer;
 
             let optionClass =
               "border-slate-800 bg-slate-950 hover:border-cyan-500/40 hover:bg-slate-800";
@@ -196,7 +231,11 @@ export default function InteractiveQuiz({
             if (answered && isCorrect) {
               optionClass =
                 "border-emerald-400/40 bg-emerald-400/10";
-            } else if (answered && isSelected && !isCorrect) {
+            } else if (
+              answered &&
+              isSelected &&
+              !isCorrect
+            ) {
               optionClass =
                 "border-red-400/40 bg-red-400/10";
             }
@@ -207,13 +246,11 @@ export default function InteractiveQuiz({
                 type="button"
                 disabled={answered}
                 onClick={() => handleAnswer(option.id)}
-                className={`w-full rounded-xl border p-4 text-left transition ${optionClass} ${
-                  answered
-                    ? "cursor-default"
-                    : "cursor-pointer"
-                }`}
+                className={`w-full rounded-xl border p-4 text-left transition ${optionClass}`}
               >
+
                 <div className="flex items-start gap-3">
+
                   <span
                     className={`flex h-8 w-8 shrink-0 items-center justify-center rounded-lg text-xs font-black ${
                       answered && isCorrect
@@ -231,23 +268,27 @@ export default function InteractiveQuiz({
                   </span>
 
                   {answered && isCorrect && (
-                    <span className="ml-auto pt-1">
+                    <span className="ml-auto">
                       ✅
                     </span>
                   )}
 
-                  {answered && isSelected && !isCorrect && (
-                    <span className="ml-auto pt-1">
-                      ❌
-                    </span>
-                  )}
+                  {answered &&
+                    isSelected &&
+                    !isCorrect && (
+                      <span className="ml-auto">
+                        ❌
+                      </span>
+                    )}
+
                 </div>
+
               </button>
             );
           })}
+
         </div>
 
-        {/* EXPLICACIÓN */}
         {answered && (
           <div
             className={`mt-5 rounded-xl border p-5 ${
@@ -256,6 +297,7 @@ export default function InteractiveQuiz({
                 : "border-amber-400/20 bg-amber-400/5"
             }`}
           >
+
             <div className="text-xs font-bold uppercase tracking-wider text-cyan-400">
               {selectedAnswer === question.correctAnswer
                 ? "✅ Respuesta correcta"
@@ -265,15 +307,15 @@ export default function InteractiveQuiz({
             <p className="mt-3 text-sm leading-7 text-slate-300">
               {question.explanation}
             </p>
+
           </div>
         )}
 
-        {/* BOTÓN SIGUIENTE */}
         {answered && (
           <button
             type="button"
             onClick={handleNext}
-            className="mt-6 w-full rounded-xl bg-violet-500 px-5 py-3 text-sm font-black text-white transition hover:bg-violet-400"
+            className="mt-6 w-full rounded-xl bg-violet-500 px-5 py-3 text-sm font-black text-white"
           >
             {currentQuestion === questions.length - 1
               ? "🏆 Ver resultado"
@@ -281,8 +323,8 @@ export default function InteractiveQuiz({
           </button>
         )}
 
-        {/* PUNTUACIÓN */}
         <div className="mt-5 flex items-center justify-between border-t border-slate-800 pt-5">
+
           <span className="text-xs text-slate-500">
             Puntuación actual
           </span>
@@ -290,8 +332,11 @@ export default function InteractiveQuiz({
           <span className="text-sm font-black text-cyan-400">
             {score} / {questions.length}
           </span>
+
         </div>
+
       </div>
+
     </div>
   );
 }

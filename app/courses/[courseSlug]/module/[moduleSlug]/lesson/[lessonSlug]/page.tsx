@@ -1,11 +1,7 @@
-import Link from "next/link";
-import {
-  getCourseBySlug,
-  getLesson,
-} from "@/data/courses";
-
 import CodePlayground from "@/components/laboratory/CodePlayground";
 import InteractiveQuiz from "@/components/courses/InteractiveQuiz";
+import { getLesson } from "@/data/courses";
+import { notFound } from "next/navigation";
 
 type LessonPageProps = {
   params: Promise<{
@@ -24,218 +20,284 @@ export default async function LessonPage({
     lessonSlug,
   } = await params;
 
-  const course = getCourseBySlug(courseSlug);
-
   const lesson = getLesson(
     courseSlug,
     moduleSlug,
     lessonSlug
   );
 
-  if (!course || !lesson) {
-    return (
-      <main className="flex min-h-screen items-center justify-center bg-slate-950 px-4 text-white">
-        <div className="text-center">
-          <div className="text-5xl">😕</div>
-
-          <h1 className="mt-4 text-2xl font-black">
-            Lección no encontrada
-          </h1>
-
-          <Link
-            href="/courses"
-            className="mt-6 inline-block rounded-xl bg-cyan-500 px-5 py-3 text-sm font-bold text-slate-950"
-          >
-            Volver a cursos
-          </Link>
-        </div>
-      </main>
-    );
+  if (!lesson) {
+    notFound();
   }
+
+  const exercise = lesson.exercises[0];
 
   return (
     <main className="min-h-screen bg-slate-950 text-white">
 
       {/* HEADER */}
-      <section className="border-b border-slate-800">
-        <div className="mx-auto max-w-5xl px-4 py-8 sm:px-6 lg:px-8">
 
-          <Link
-            href={`/courses/${courseSlug}`}
-            className="text-sm font-semibold text-slate-500 hover:text-cyan-400"
-          >
-            ← Volver al curso
-          </Link>
+      <section className="border-b border-slate-800 bg-slate-950">
 
-          <div className="mt-6">
+        <div className="mx-auto max-w-6xl px-4 py-10 sm:px-6 lg:px-8">
 
-            <div className="text-xs font-bold uppercase tracking-wider text-cyan-400">
-              {course.title}
-            </div>
+          <div className="mb-4 inline-flex rounded-full border border-cyan-400/20 bg-cyan-400/5 px-3 py-1 text-xs font-bold uppercase tracking-wider text-cyan-400">
+            {courseSlug.toUpperCase()} · {moduleSlug}
+          </div>
 
-            <h1 className="mt-3 text-4xl font-black tracking-tight">
-              {lesson.title}
-            </h1>
+          <h1 className="max-w-4xl text-3xl font-black tracking-tight sm:text-4xl lg:text-5xl">
+            {lesson.title}
+          </h1>
 
-            <p className="mt-3 max-w-3xl text-base leading-7 text-slate-400">
-              {lesson.description}
-            </p>
+          <p className="mt-4 max-w-3xl text-base leading-7 text-slate-400">
+            {lesson.description}
+          </p>
 
-            <div className="mt-5 flex flex-wrap gap-3">
+          <div className="mt-5 flex flex-wrap gap-3">
 
-              <span className="rounded-full border border-slate-800 bg-slate-900 px-3 py-1 text-xs text-slate-500">
-                ⏱ {lesson.duration}
-              </span>
+            <span className="rounded-full border border-slate-700 bg-slate-900 px-3 py-1 text-xs font-bold text-slate-400">
+              Nivel: {lesson.level}
+            </span>
 
-              <span className="rounded-full border border-slate-800 bg-slate-900 px-3 py-1 text-xs text-slate-500">
-                📚 {lesson.level}
-              </span>
+            <span className="rounded-full border border-slate-700 bg-slate-900 px-3 py-1 text-xs font-bold text-slate-400">
+              ⏱ {lesson.duration}
+            </span>
 
-              <span className="rounded-full border border-slate-800 bg-slate-900 px-3 py-1 text-xs text-slate-500">
-                🧪 {lesson.exercises.length} ejercicios
-              </span>
-
-              <span className="rounded-full border border-slate-800 bg-slate-900 px-3 py-1 text-xs text-slate-500">
-                ❓ {lesson.quiz.length} preguntas
-              </span>
-
-            </div>
+            <span className="rounded-full border border-violet-400/20 bg-violet-400/5 px-3 py-1 text-xs font-bold text-violet-400">
+              📝 {lesson.quiz.length} preguntas
+            </span>
 
           </div>
+
         </div>
+
       </section>
 
       {/* CONTENIDO */}
-      <div className="mx-auto max-w-5xl px-4 py-10 sm:px-6 lg:px-8">
 
-        {/* TEORÍA */}
-        <section>
-          <SectionTitle
-            number="01"
-            title="Conceptos fundamentales"
-          />
+      <section className="mx-auto max-w-6xl px-4 py-10 sm:px-6 lg:px-8">
 
-          <div className="space-y-5">
-            {lesson.theory.map(
-              (paragraph, index) => (
-                <p
-                  key={index}
-                  className="text-base leading-8 text-slate-300"
-                >
-                  {paragraph}
-                </p>
-              )
-            )}
-          </div>
-        </section>
+        <div className="grid gap-8 lg:grid-cols-[1fr_320px]">
 
-        {/* CONCEPTOS */}
-        {lesson.concepts.length > 0 && (
-          <section className="mt-14">
+          {/* LECCIÓN */}
 
-            <SectionTitle
-              number="02"
-              title="Conceptos clave"
-            />
+          <article className="min-w-0">
 
-            <div className="grid gap-5 md:grid-cols-2">
+            <div className="rounded-2xl border border-slate-800 bg-slate-900 p-6 sm:p-8">
 
-              {lesson.concepts.map(
-                (concept) => (
-                  <article
-                    key={concept.title}
-                    className="rounded-2xl border border-slate-800 bg-slate-900 p-6"
-                  >
+              {/* TEORÍA */}
 
-                    <h3 className="text-lg font-black">
-                      {concept.title}
-                    </h3>
+              <div>
 
-                    <p className="mt-3 text-sm leading-7 text-slate-400">
-                      {concept.explanation}
+                <span className="text-xs font-bold uppercase tracking-wider text-cyan-400">
+                  Teoría
+                </span>
+
+                <h2 className="mt-2 text-2xl font-bold">
+                  {lesson.title}
+                </h2>
+
+                <div className="mt-6 space-y-5">
+
+                  {lesson.theory.map((paragraph, index) => (
+                    <p
+                      key={index}
+                      className="leading-7 text-slate-400"
+                    >
+                      {paragraph}
+                    </p>
+                  ))}
+
+                </div>
+
+              </div>
+
+              {/* CONCEPTOS */}
+
+              {lesson.concepts.length > 0 && (
+                <div className="mt-12">
+
+                  <div className="mb-6">
+
+                    <span className="text-xs font-bold uppercase tracking-wider text-cyan-400">
+                      Conceptos clave
+                    </span>
+
+                    <h2 className="mt-2 text-2xl font-bold">
+                      Lo que debes conocer
+                    </h2>
+
+                  </div>
+
+                  <div className="space-y-5">
+
+                    {lesson.concepts.map((concept) => (
+                      <div
+                        key={concept.title}
+                        className="rounded-2xl border border-slate-800 bg-slate-950 p-5"
+                      >
+
+                        <h3 className="text-lg font-bold text-white">
+                          {concept.title}
+                        </h3>
+
+                        <p className="mt-3 leading-7 text-slate-400">
+                          {concept.explanation}
+                        </p>
+
+                        {concept.example && (
+                          <pre className="mt-4 overflow-x-auto rounded-xl border border-slate-800 bg-slate-900 p-4 text-sm leading-6 text-cyan-300">
+                            {concept.example}
+                          </pre>
+                        )}
+
+                      </div>
+                    ))}
+
+                  </div>
+
+                </div>
+              )}
+
+              {/* LABORATORIO */}
+
+              {exercise && (
+                <div className="mt-12 border-t border-slate-800 pt-12">
+
+                  <div className="mb-6">
+
+                    <span className="text-xs font-bold uppercase tracking-wider text-cyan-400">
+                      Laboratorio
+                    </span>
+
+                    <h2 className="mt-2 text-2xl font-bold">
+                      Ahora hazlo tú
+                    </h2>
+
+                    <p className="mt-2 text-sm leading-6 text-slate-400">
+                      Practica lo aprendido modificando el código y
+                      observando el resultado.
                     </p>
 
-                    {concept.example && (
-                      <pre className="mt-5 overflow-x-auto rounded-xl bg-slate-950 p-4 text-xs leading-6 text-cyan-300">
-                        <code>
-                          {concept.example}
-                        </code>
-                      </pre>
-                    )}
+                  </div>
 
-                  </article>
-                )
+                  <CodePlayground exercise={exercise} />
+
+                </div>
               )}
 
-            </div>
-          </section>
-        )}
+              {/* QUIZ */}
 
-        {/* LABORATORIO */}
-        {lesson.exercises.length > 0 && (
-          <section className="mt-14">
+              <div className="mt-16 border-t border-slate-800 pt-12">
 
-            <SectionTitle
-              number="03"
-              title="Laboratorio interactivo"
-            />
+                <div className="mb-6">
 
-            <div className="space-y-8">
+                  <span className="text-xs font-bold uppercase tracking-wider text-violet-400">
+                    Evaluación
+                  </span>
 
-              {lesson.exercises.map(
-                (exercise) => (
-                  <CodePlayground
-                    key={exercise.id}
-                    exercise={exercise}
-                  />
-                )
-              )}
+                  <h2 className="mt-2 text-2xl font-bold">
+                    Quiz interactivo
+                  </h2>
+
+                  <p className="mt-2 text-sm leading-6 text-slate-400">
+                    Comprueba lo que aprendiste en esta lección.
+                  </p>
+
+                </div>
+
+                <InteractiveQuiz
+                  questions={lesson.quiz}
+                />
+
+              </div>
 
             </div>
 
-          </section>
-        )}
+          </article>
 
-        {/* QUIZ */}
-        {lesson.quiz.length > 0 && (
-          <section className="mt-14">
+          {/* PANEL LATERAL */}
 
-            <SectionTitle
-              number="04"
-              title="Quiz interactivo"
-            />
+          <aside className="h-fit space-y-4 lg:sticky lg:top-6">
 
-            <InteractiveQuiz
-              questions={lesson.quiz}
-            />
+            {/* PROGRESO */}
 
-          </section>
-        )}
+            <div className="rounded-2xl border border-slate-800 bg-slate-900 p-5">
 
-      </div>
+              <p className="text-xs font-bold uppercase tracking-wider text-slate-500">
+                Tu progreso
+              </p>
+
+              <div className="mt-4">
+
+                <div className="mb-2 flex items-center justify-between text-xs">
+
+                  <span className="text-slate-400">
+                    Lección
+                  </span>
+
+                  <span className="font-bold text-cyan-400">
+                    {lesson.title}
+                  </span>
+
+                </div>
+
+                <div className="h-2 overflow-hidden rounded-full bg-slate-800">
+
+                  <div className="h-full w-full rounded-full bg-cyan-500" />
+
+                </div>
+
+              </div>
+
+            </div>
+
+            {/* OBJETIVO */}
+
+            <div className="rounded-2xl border border-amber-400/20 bg-amber-400/5 p-5">
+
+              <p className="text-xs font-bold uppercase tracking-wider text-amber-400">
+                🎯 Objetivo
+              </p>
+
+              <p className="mt-3 text-sm leading-6 text-slate-300">
+                {lesson.description}
+              </p>
+
+            </div>
+
+            {/* EVALUACIÓN */}
+
+            <div className="rounded-2xl border border-violet-400/20 bg-violet-400/5 p-5">
+
+              <p className="text-xs font-bold uppercase tracking-wider text-violet-400">
+                📝 Evaluación
+              </p>
+
+              <p className="mt-3 text-sm leading-6 text-slate-300">
+                Esta lección contiene un quiz interactivo.
+              </p>
+
+              <div className="mt-4 flex items-center justify-between rounded-xl border border-violet-400/10 bg-slate-950/50 p-3">
+
+                <span className="text-xs text-slate-500">
+                  Preguntas
+                </span>
+
+                <span className="font-bold text-violet-400">
+                  {lesson.quiz.length}
+                </span>
+
+              </div>
+
+            </div>
+
+          </aside>
+
+        </div>
+
+      </section>
 
     </main>
-  );
-}
-
-function SectionTitle({
-  number,
-  title,
-}: {
-  number: string;
-  title: string;
-}) {
-  return (
-    <div className="mb-7 flex items-center gap-4">
-
-      <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-cyan-500/10 text-xs font-black text-cyan-400">
-        {number}
-      </div>
-
-      <h2 className="text-2xl font-black">
-        {title}
-      </h2>
-
-    </div>
   );
 }
